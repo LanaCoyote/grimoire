@@ -1,0 +1,37 @@
+const fs = require('fs');
+const Promise = require('bluebird');
+
+const Command = require('../models/command');
+const log = require('../lib/log');
+
+function loadCommands() {
+    log.debug("Loading commands in ./commands...");
+    return new Promise((ok, fail) => fs.readdir('./commands', (err, files) => err ? fail(err) : ok(files)))
+        .map(fileToCommand)
+        .then(commands => commands.filter(command => command instanceof Command))
+        .tap((commands) => log.debug("Loaded", commands.length, "commands!"));
+}
+
+function fileToCommand(filename) {
+    // validate incoming filenames
+    if (filename === 'index.js') return;
+    let splitName = filename.split('.');
+    let extension = splitName.pop();
+    if (splitName.length && extension !== 'js' && extension !== 'node') return;
+
+    // attempt to build a command from module.exports
+    try {
+        let commandDef = require('./' + filename);
+        if (!Object.keys(commandDef).length) return log.error("Command definition not exported:", filename);
+        return new Command(commandDef);
+    } catch (err) {
+        if (err instanceof Command.Error) return log.error(err.message + ':', filename);
+        if (err.message.startsWith("Cannot find module")) return log.error("Invalid node module:", filename);
+        log.error("Error loading command:", err.stack);
+    }
+}
+
+
+module.exports = {
+    loadCommands
+};
