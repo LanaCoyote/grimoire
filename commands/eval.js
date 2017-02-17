@@ -1,19 +1,49 @@
 const Promise = require('bluebird');
 
+let _;
+
 function evaluate(message, params) {
     let expression = params.join(' ');
     let process = {}, module = {}; // hide the scope
     try {
         let result = eval(`(${expression})`);
-        if (result === null) result = "null";
-        if (result === undefined) result = "undefined";
-        if (typeof result === 'function') result = `[function ${result.name}]`;
-        if (result.toString() === '[object Object]') result = JSON.stringify(result, null, 4);
-        return message.edit("▶ **Input:**\n```js\n" + expression
-            + "```\n ☑ **Output:**\n```js\n" + result.toString() + "```");
+        _ = result;
+        result = convertResult(result);
+        if (_ && _.then) {
+            let startTime = Date.now();
+            return Promise.join(
+                message.edit("▶ **Input:**\n```js\n" + expression + "```\n ☑ **Output:**\n```js\n" + result.toString() + "```"),
+                _.catch(err => err),
+                (message, outcome) => {
+                    let runtime = Date.now() - startTime;
+                    let header = outcome instanceof Error ? "Rejection" : "Resolution";
+                    outcome = convertResult(outcome);
+                    return message.edit(message.content + "\n 🕒 **" + header + ":** in " + runtime + "ms\n```js\n"
+                        + outcome.toString() + "```");
+                });
+        } else {
+            return message.edit("▶ **Input:**\n```js\n" + expression
+                + "```\n ☑ **Output:**\n```js\n" + result.toString() + "```");
+        }
     } catch (err) {
         return message.edit("▶ **Input:**\n```js\n" + expression
             + "```\n 💔 **Error:**\n```js\n" + err.toString() + "```");
+    }
+}
+
+function convertResult(result) {
+    if (result === null) return "null";
+    if (result === undefined) return "undefined";
+    if (typeof result === 'function') return `[function ${result.name}]`;
+    if (result.toString() === '[object Object]') return weakStringify(result);
+    return result;
+}
+
+function weakStringify(obj) {
+    try {
+        return JSON.stringify(obj, null, 4);
+    } catch (err) {
+        return obj;
     }
 }
 
