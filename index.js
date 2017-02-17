@@ -7,7 +7,8 @@ const log = require('./lib/log');
 
 const bot = new Discord.Client();
 const prefix = ';';
-let commands;
+
+process.errorCount = 0;
 
 bot.on('ready', () => {
     log.info("Bot is online");
@@ -16,10 +17,11 @@ bot.on('ready', () => {
 bot.on('message', message => {
     if (message.author !== bot.user) return;
     if (message.content.startsWith(prefix)) {
+        if (!process.commands) return message.reply("Error loading commands");
         let argv = message.content.split(' '), executed;
-        for (let idx in commands) {
-            if (commands[idx].matches(argv[0].substr(1))) {
-                executeCommand(commands[idx], argv, message);
+        for (let idx in process.commands) {
+            if (process.commands[idx].matches(argv[0].substr(1))) {
+                executeCommand(process.commands[idx], argv, message);
                 executed = true;
                 break;
             }
@@ -38,15 +40,17 @@ function executeCommand(command, argv, message) {
             let runtime = new Date() - startTime;
             log.info(`Executed command "${commandName}" in ${runtime}ms`);
         }).catch(err => {
+            process.errorCount++;
             log.error(`Encountered an error executing ${commandName}:`, err);
         });
     } catch (err) {
+        process.errorCount++;
         return log.error(`Critical error executing ${commandName}:`, err);
     }
 }
 
 log.debug("Initializing bot...");
 commandLoader.loadCommands().then(cmds => {
-    commands = cmds;
+    process.commands = cmds;
     bot.login(config.token);
 });
