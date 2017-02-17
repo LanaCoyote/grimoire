@@ -14,13 +14,13 @@ function createRichEmbed(message) {
         .setURL("https://github.com/Lancey6/grimoire")
         .setColor(0x00FF00)
         .setThumbnail("http://img03.deviantart.net/fbf4/i/2013/155/f/9/netrunner__grimore_by_leejj-d67t9vf.jpg")
-        .addField("Uptime", getUptimeSting())
-        .addField("Servers", message.client.guilds.size)
-        .addField("Channels", message.client.channels.size)
-        .addField("Average Ping", message.client.ping.toFixed(2) + "ms")
-        .addField("Spells Prepared", getCommandString())
-        .addField("Errors Encountered", process.errorCount)
-        .addField("Villages Destroyed", 834)
+        .addField("Uptime", getUptimeSting(), true)
+        .addField("Servers", message.client.guilds.size, true)
+        .addField("Channels", message.client.channels.size, true)
+        .addField("Average Ping", message.client.ping.toFixed(2) + "ms", true)
+        .addField("Spells Prepared", getCommandString(), true)
+        .addField("Errors Encountered", process.errorCount, true)
+        .addField("Villages Destroyed", 834, true)
 }
 
 function getUptimeSting() {
