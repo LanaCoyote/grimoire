@@ -36,7 +36,7 @@ function createEmbed(title, edits, original) {
     if (!edits) return {title, color: 0xFF0000};
     let description = edits.map((edit,idx) => {
         if (idx === edits.length - 1) return "Original Message: " + edit.content;
-        return edit.editedAt.toISOString() + ": " + edit.content;
+        return (edit.editedAt || edit.createdAt || new Date()).toISOString() + ": " + edit.content;
     }).join('\n');
     return {title, color: 0x00AAFF, description}
 }

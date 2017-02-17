@@ -1,6 +1,7 @@
 const Promise = require('bluebird');
 const RichEmbed = require('discord.js').RichEmbed;
 
+const nickname = require('../config.json').nickname;
 const startTime = Date.now();
 
 function stats(message) {
@@ -9,19 +10,17 @@ function stats(message) {
 
 function createRichEmbed(message) {
     return new RichEmbed()
-        .setTitle("Grimoire Latrans - Stats")
+        .setTitle(`Grimoire ${nickname || "of a Forgetful Mage"} - Stats`)
         .setURL("https://github.com/Lancey6/grimoire")
         .setColor(0x00FF00)
-        .setImage("http://img03.deviantart.net/fbf4/i/2013/155/f/9/netrunner__grimore_by_leejj-d67t9vf.jpg")
-        .setDescription(getDescription(message))
-}
-
-function getDescription(message) {
-    return "**Uptime:** " + getUptimeSting() + "\n"
-         + "**Servers:** " + message.client.guilds.size + "\n"
-         + "**Channels:** " + message.client.channels.size + "\n"
-         + "**Avgerage Ping:** " + message.client.ping + "ms\n"
-         + "**Villages Destroyed:** 834";
+        .setThumbnail("http://img03.deviantart.net/fbf4/i/2013/155/f/9/netrunner__grimore_by_leejj-d67t9vf.jpg")
+        .addField("Uptime", getUptimeSting())
+        .addField("Servers", message.client.guilds.size)
+        .addField("Channels", message.client.channels.size)
+        .addField("Average Ping", message.client.ping.toFixed(2) + "ms")
+        .addField("Spells Prepared", getCommandString())
+        .addField("Errors Encountered", process.errorCount)
+        .addField("Villages Destroyed", 834)
 }
 
 function getUptimeSting() {
@@ -36,6 +35,10 @@ function getUptimeSting() {
     if (hours) outstring = `${hours} hours, ${outstring}`;
     if (days) outstring = `${days} days, ${outstring}`;
     return outstring;
+}
+
+function getCommandString() {
+    return process.commands.map(cmd => cmd.help.name || cmd.alias[cmd.alias.length - 1]).join(", ");
 }
 
 module.exports = {
