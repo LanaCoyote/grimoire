@@ -3,7 +3,7 @@ function ping(message) {
     let startTime = message.createdAt;
     return message.channel.sendMessage(`🏓 Pong!`)
         .then(reply => {
-            let pingTime = reply.createdAt - startTime;
+            let pingTime = Math.floor((reply.createdAt - startTime)/2);
             return reply.edit(`🏓 Pong! ${pingTime}ms`);
         });
 }
