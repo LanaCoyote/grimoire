@@ -1,6 +1,6 @@
 const log = require('../lib/log');
 
-const CODEBLOCK_REGEX = /```(?:.|\n)+```/;
+const CODEBLOCK_REGEX = /```(?:.|\n)+?```/;
 
 function snippet(message, params) {
     let searchMessage;
