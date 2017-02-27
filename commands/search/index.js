@@ -38,18 +38,35 @@ function fileToSource(filename) {
 
 function search(message, params) {
     let sourceName;
+    if (!params[0]) return help(message);
     return loadSearchSources()
         .then(sources => {
             let source = _.find(sources, src => !!~src.alias.indexOf(params[0].toLowerCase()));
+            sourceName = source ? source.description || source.alias[source.alias.length - 1] : params[0];
             if (!source) return log.error("No search source found for", params[0]);
-            sourceName = source.description || source.alias[source.alias.length - 1];
             return source.search(message, params.slice(1));
         })
         .then(result => {
+            if (!result) return message.channel.sendMessage(`No search source found for ${sourceName}`);
             let searchString = params.slice(1).join(' ');
             let contentString = `Showing results from ${sourceName} for "${searchString}"`;
             return message.channel.sendEmbed(result, contentString);
         });
+}
+
+function help(message) {
+    let messageString = "Usage: ;search [sourcename] [string to search...]";
+    return loadSearchSources()
+        .then(sources => {
+            messageString += "\nAvailable Sources: " + sources
+                    .map(source => {
+                        let sourceString = source.alias[source.alias.length - 1];
+                        if (source.alias.length > 1) sourceString += " (" + source.alias.slice(0, -1).join(' ') + ")";
+                        return sourceString;
+                    })
+                    .join(', ');
+            return message.channel.sendMessage(messageString);
+        })
 }
 
 loadSearchSources();

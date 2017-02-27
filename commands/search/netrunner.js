@@ -66,8 +66,9 @@ function searchForCard(message, params) {
         return _.filter(cards.data, card => {
             for (let key in query) {
                 let cardValue = card[key], compareValue = query[key];
+                let compareRegex = new RegExp(compareValue.replace(' ', '\\s(.+\\s)?'), 'i');
+                log.debug(compareRegex.toString());
                 if (typeof cardValue === 'string') {
-                    let compareRegex = new RegExp(compareValue, 'i');
                     if (!compareRegex.test(cardValue)) return false;
                 }
                 else if (cardValue != compareValue) return false;
@@ -90,7 +91,7 @@ function searchForCard(message, params) {
             if (results[0].faction_cost) embed.addField("Influence", results[0].faction_cost, true);
             if (results[0].influence_limit) embed.addField("Influence", results[0].influence_limit, true);
             if (results[0].minimum_deck_size) embed.addField("Deck Size", results[0].minimum_deck_size, true);
-            if (results[0].base_link) embed.addField("Link", results[0].base_link, true);
+            if (results[0].base_link !== undefined) embed.addField("Base Link", results[0].base_link, true);
             if (results[0].memory_cost) embed.addField("Memory", results[0].memory_cost, true);
             if (results[0].strength) embed.addField("Strength", results[0].strength, true);
             if (results[0].trash_cost) embed.addField("Trash Cost", results[0].trash_cost, true);
