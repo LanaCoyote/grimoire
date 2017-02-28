@@ -42,7 +42,7 @@ function parseExpr(expr) {
     let [count,sides,keep,target,explode] = match.slice(1);
     count = count ? parseInt(count) : 1;
     if (!sides) return {sum: count, expr};  // no sides, this is a constant
-    if (explode && parseInt(sides.substr(1)))
+    if (explode && parseInt(sides.substr(1)) === 1)
         throw new DiceError("Attempted to explode a 1 sided die (this will -actually- explode)", expr);
 
     // roll some dice!

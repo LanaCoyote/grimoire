@@ -67,7 +67,6 @@ function searchForCard(message, params) {
             for (let key in query) {
                 let cardValue = card[key], compareValue = query[key];
                 let compareRegex = new RegExp(compareValue.replace(' ', '\\s(.+\\s)?'), 'i');
-                log.debug(compareRegex.toString());
                 if (typeof cardValue === 'string') {
                     if (!compareRegex.test(cardValue)) return false;
                 }
