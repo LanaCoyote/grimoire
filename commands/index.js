@@ -4,9 +4,11 @@ const Promise = require('bluebird');
 const Command = require('../models/command');
 const log = require('../lib/log');
 
+const COMMAND_PATH = __dirname;
+
 function loadCommands() {
-    log.debug("Loading commands in ./commands...");
-    return new Promise((ok, fail) => fs.readdir('./commands', (err, files) => err ? fail(err) : ok(files)))
+    log.debug("Loading commands in", COMMAND_PATH, "...");
+    return new Promise((ok, fail) => fs.readdir(COMMAND_PATH, (err, files) => err ? fail(err) : ok(files)))
         .map(fileToCommand)
         .then(commands => commands.filter(command => command instanceof Command))
         .tap((commands) => log.debug("Loaded", commands.length, "commands!"));

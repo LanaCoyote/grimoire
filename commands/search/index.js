@@ -4,13 +4,14 @@ const Promise = require('bluebird');
 
 const log = require('../../lib/log');
 
+const SEARCH_PATH = __dirname;
 let searchSources;
 
 function loadSearchSources() {
     if (searchSources) return Promise.resolve(searchSources);
 
-    log.debug("Loading search sources in ./commands/search...");
-    return new Promise((ok, fail) => fs.readdir('./commands/search', (err, files) => err ? fail(err) : ok(files)))
+    log.debug("Loading search sources in", SEARCH_PATH, "...");
+    return new Promise((ok, fail) => fs.readdir(SEARCH_PATH, (err, files) => err ? fail(err) : ok(files)))
         .map(fileToSource)
         .then(sources => sources.filter(src => !!src))
         .tap(sources => {
