@@ -83,18 +83,18 @@ function searchForCard(message, params) {
         } else if (results.length === 1) {
             embed.setTitle(results[0].title + (results[0].uniqueness ? " ♦" : ""))
                 .setURL(UI_CARD_ROUTE + results[0].code)
-                .setDescription(getDescription(results[0]))
+                // .setDescription(getDescription(results[0]))
                 .setImage(cardImageURI.replace("{code}", results[0].code));
 
-            if (results[0].cost) embed.addField("Cost", results[0].cost, true);
-            if (results[0].faction_cost) embed.addField("Influence", results[0].faction_cost, true);
-            if (results[0].influence_limit) embed.addField("Influence", results[0].influence_limit, true);
-            if (results[0].minimum_deck_size) embed.addField("Deck Size", results[0].minimum_deck_size, true);
-            if (results[0].base_link !== undefined) embed.addField("Base Link", results[0].base_link, true);
-            if (results[0].memory_cost) embed.addField("Memory", results[0].memory_cost, true);
-            if (results[0].strength) embed.addField("Strength", results[0].strength, true);
-            if (results[0].trash_cost) embed.addField("Trash Cost", results[0].trash_cost, true);
-            if (results[0].flavor) embed.setFooter(results[0].flavor);
+            // if (results[0].cost) embed.addField("Cost", results[0].cost, true);
+            // if (results[0].faction_cost) embed.addField("Influence", results[0].faction_cost, true);
+            // if (results[0].influence_limit) embed.addField("Influence", results[0].influence_limit, true);
+            // if (results[0].minimum_deck_size) embed.addField("Deck Size", results[0].minimum_deck_size, true);
+            // if (results[0].base_link !== undefined) embed.addField("Base Link", results[0].base_link, true);
+            // if (results[0].memory_cost) embed.addField("Memory", results[0].memory_cost, true);
+            // if (results[0].strength) embed.addField("Strength", results[0].strength, true);
+            // if (results[0].trash_cost) embed.addField("Trash Cost", results[0].trash_cost, true);
+            // if (results[0].flavor) embed.setFooter(results[0].flavor);
 
             return embed;
         } else {
