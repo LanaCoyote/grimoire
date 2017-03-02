@@ -3,6 +3,7 @@ const Promise = require('bluebird');
 const log = require('../lib/log');
 const config = require('../config.json');
 const tokenRegex = new RegExp(config.token, 'g');
+const MAX_LENGTH = 800;
 
 let _;
 
@@ -24,21 +25,21 @@ function evaluate(message, params) {
         if (_ && _.then) {
             let startTime = Date.now();
             return Promise.join(
-                message.edit("▶ **Input:**\n```js\n" + expression + "```\n ☑ **Output:**\n```js\n" + result.toString() + "```"),
+                message.edit("▶ **Input:**\n```js\n" + expression + "```\n ☑ **Output:**\n```js\n" + truncate(result.toString(), MAX_LENGTH) + "```"),
                 _.catch(err => err),
                 (message, outcome) => {
                     let runtime = Date.now() - startTime;
                     let header = outcome instanceof Error ? "Rejection" : "Resolution";
                     outcome = convertResult(outcome);
                     return message.edit(message.content + "\n 🕒 **" + header + ":** in " + runtime + "ms\n```js\n"
-                            + outcome.toString() + "```");
+                            + truncate(outcome.toString(), MAX_LENGTH) + "```");
                 });
         } else {
-            return message.edit("▶ **Input:**\n```js\n" + expression + "```\n ☑ **Output:**\n```js\n" + result.toString() + "```");
+            return message.edit("▶ **Input:**\n```js\n" + expression + "```\n ☑ **Output:**\n```js\n" + truncate(result.toString(), MAX_LENGTH) + "```");
         }
     } catch (err) {
         return outputMessage ?
-            message.edit("▶ **Input:**\n```js\n" + expression + "```\n 💔 **Error:**\n```js\n" + err.toString() + "```") :
+            message.edit("▶ **Input:**\n```js\n" + expression + "```\n 💔 **Error:**\n```js\n" + truncate(err.toString(), MAX_LENGTH) + "```") :
             Promise.resolve(log.error("Error in eval:", err)).then(() => message.delete());
     }
 }
@@ -63,6 +64,11 @@ function weakStringify(obj) {
             return "[object " + (obj.constructor ? obj.constructor.name : "Unknown") + ']';
         return obj;
     }
+}
+
+function truncate(str, len) {
+    if (str.length < len) return str;
+    return str.substr(0, len - 3) + "...";
 }
 
 module.exports = {
