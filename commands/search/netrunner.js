@@ -47,7 +47,10 @@ class NetrunnerError extends Error {
 }
 
 function getCardCache() {
-    if (cardCache) return Promise.resolve(cardCache);
+    if (cardCache) {
+        log.debug("Card cache loaded from memory");
+        return Promise.resolve(cardCache);
+    }
 
     log.debug("Loading cards from NetrunnerDB...");
     return request({uri: API_CARDS_ROUTE, json: true})
@@ -150,7 +153,7 @@ function replaceTokens(str) {
 }
 
 function unloadCache() {
-    cardCache = {};
+    delete module[cardCache];
     log.debug("NetrunnerDB card cache unloaded");
 }
 
