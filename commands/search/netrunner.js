@@ -34,7 +34,7 @@ const MARKDOWN_TO_TAGS = {
     ":link:" : /\[link]/g
 };
 
-const refreshCardCashUnload = _.debounce(unloadCache, config.cache_timeout || 1000 * 60 * 15);
+const refreshCardCacheUnload = _.debounce(unloadCache, config.cache_timeout || 1000 * 60 * 15);
 
 let cardCache;
 let cardImageURI;
@@ -57,7 +57,7 @@ function getCardCache() {
         .then(json => {
             log.debug("Route responded successfully. Got " + json.data.length + " cards.");
             cardImageURI = json.imageUrlTemplate;
-            refreshCardCashUnload();
+            refreshCardCacheUnload();
             return (cardCache = json);
         })
         .catch(err => {
@@ -153,7 +153,7 @@ function replaceTokens(str) {
 }
 
 function unloadCache() {
-    delete module[cardCache];
+    cardCache = undefined;
     log.debug("NetrunnerDB card cache unloaded");
 }
 
