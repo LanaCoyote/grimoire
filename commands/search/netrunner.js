@@ -3,6 +3,7 @@ const Promise = require('bluebird');
 const request = require('request-promise');
 const RichEmbed = require('discord.js').RichEmbed;
 
+const config = require('../../config.json');
 const log = require('../../lib/log');
 
 const API_CARDS_ROUTE = "https://netrunnerdb.com/api/2.0/public/cards";
@@ -33,6 +34,8 @@ const MARKDOWN_TO_TAGS = {
     ":link:" : /\[link]/g
 };
 
+const refreshCardCashUnload = _.debounce(unloadCache, config.cache_timeout || 1000 * 60 * 15);
+
 let cardCache;
 let cardImageURI;
 
@@ -51,6 +54,7 @@ function getCardCache() {
         .then(json => {
             log.debug("Route responded successfully. Got " + json.data.length + " cards.");
             cardImageURI = json.imageUrlTemplate;
+            refreshCardCashUnload();
             return (cardCache = json);
         })
         .catch(err => {
@@ -144,6 +148,11 @@ function replaceTokens(str) {
         str = str.replace(pattern, replacement);
     });
     return str;
+}
+
+function unloadCache() {
+    cardCache = {};
+    log.debug("NetrunnerDB card cache unloaded");
 }
 
 module.exports = {
