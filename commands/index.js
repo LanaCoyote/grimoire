@@ -14,6 +14,17 @@ function loadCommands() {
         .tap((commands) => log.debug("Loaded", commands.length, "commands!"));
 }
 
+function reloadCommands(bot) {
+    log.debug("Unloading prepared commands...");
+    bot.commands.forEach(command => {
+        delete require.cache[require.resolve('./' + command.filename)];
+    });
+    log.debug("Unloaded", bot.commands.length, "commands!");
+    return loadCommands().tap(commands => {
+        bot.commands = commands;
+    });
+}
+
 function fileToCommand(filename) {
     // validate incoming filenames
     if (filename === 'index.js') return;
@@ -25,7 +36,7 @@ function fileToCommand(filename) {
     try {
         let commandDef = require('./' + filename);
         if (!Object.keys(commandDef).length) return log.error("Command definition not exported:", filename);
-        return new Command(commandDef);
+        return new Command(commandDef, filename);
     } catch (err) {
         if (err instanceof Command.Error) return log.error(err.message + ':', filename);
         if (err.message.startsWith("Cannot find module")) return log.error("Invalid node module:", filename);
@@ -35,5 +46,6 @@ function fileToCommand(filename) {
 
 
 module.exports = {
-    loadCommands
+    loadCommands,
+    reloadCommands
 };

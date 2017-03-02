@@ -8,7 +8,7 @@ const log = require('./lib/log');
 const bot = new Discord.Client();
 const prefix = ';';
 
-process.errorCount = 0;
+bot.errorCount = 0;
 
 bot.on('ready', () => {
     log.info("Bot is online");
@@ -17,11 +17,11 @@ bot.on('ready', () => {
 bot.on('message', message => {
     if (message.author !== bot.user) return;
     if (message.content.startsWith(prefix)) {
-        if (!process.commands) return message.reply("Error loading commands");
+        if (!bot.commands) return message.reply("Error loading commands");
         let argv = message.content.split(' '), executed;
-        for (let idx in process.commands) {
-            if (process.commands[idx].matches(argv[0].substr(1))) {
-                executeCommand(process.commands[idx], argv, message);
+        for (let idx in bot.commands) {
+            if (bot.commands[idx].matches(argv[0].substr(1))) {
+                executeCommand(bot.commands[idx], argv, message);
                 executed = true;
                 break;
             }
@@ -34,23 +34,23 @@ function executeCommand(command, argv, message) {
     let startTime = new Date(), commandName = command.help.name || argv[0].substr(1);
 
     try {
-        let cmdProm = command.execute(message, argv.splice(1));
+        let cmdProm = command.execute(message, argv.splice(1), bot);
         if (!cmdProm instanceof Promise) cmdProm = Promise.resolve(cmdProm);
         cmdProm.then(() => {
             let runtime = new Date() - startTime;
             log.info(`Executed command "${commandName}" in ${runtime}ms`);
         }).catch(err => {
-            process.errorCount++;
+            bot.errorCount++;
             log.error(`Encountered an error executing ${commandName}:`, err);
         });
     } catch (err) {
-        process.errorCount++;
+        bot.errorCount++;
         return log.error(`Critical error executing ${commandName}:`, err);
     }
 }
 
 log.debug("Initializing bot...");
 commandLoader.loadCommands().then(cmds => {
-    process.commands = cmds;
+    bot.commands = cmds;
     bot.login(config.token);
 });
