@@ -24,7 +24,7 @@ function snippet(message, params) {
     if (!codeBlock || !codeBlock[0]) return message.reply("That message doesn't contain a code block!");
     try {
         let snippet = mutateSnippet(codeBlock[0], params);
-        return message.channel.send(`Code Snippet by ${message.author} at ${message.createdAt.toLocaleString()}:\n${snippet}`)
+        return message.channel.send(`Code Snippet by ${searchMessage.author} at ${searchMessage.createdAt.toLocaleString()}:\n${snippet}`)
             .catch(err => log.error("Error sending snippet:", err));
     } catch (err) {
         log.error("Error mutating snippet:", (err instanceof SnippetError) ? err.message : err);
@@ -54,7 +54,7 @@ function mutateSnippet(snippet, params) {
                 mode = null;
                 break;
             case "lang" :
-                if (/\s\w+/.test(snippet.split('\n')[0])) snippet.replace("```", "```" + param + ' ');
+                if (/\s\w+/.test(snippet.split('\n')[0])) snippet.replace("```", "```" + param + '\n');
                 else snippet = ["```" + param].concat(snippet.split('\n').slice(1)).join('\n');
                 mode = null;
                 break;
@@ -101,5 +101,11 @@ function spacer(length) {
 
 module.exports = {
     alias: ["snip", "snippet"],
-    handler: snippet
+    handler: snippet,
+
+    help: {
+        name: "Snippet",
+        usage: ";snip | ;snippet last | <message id> [line | lines <start>[-<end>]] [lang <language>] [beautify [<indent size>]]",
+        description: "Quotes and mutates a code block"
+    }
 };
