@@ -80,7 +80,6 @@ function calculateFinal(expression, tokens) {
             return token.sum;
         }
         let operator = expression.charAt(curPos);
-        console.log(total, operator, token.sum);
         curPos += token.expr.length + 1;
         return {
             '+': total + token.sum,
