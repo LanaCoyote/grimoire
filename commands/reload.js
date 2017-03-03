@@ -1,4 +1,5 @@
 const commandLoader = require('./index');
+const log = require('../lib/log');
 
 function reload(message) {
     log.info("Command reload requested");
