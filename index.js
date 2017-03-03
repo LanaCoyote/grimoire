@@ -6,7 +6,7 @@ const commandLoader = require('./commands');
 const log = require('./lib/log');
 
 const bot = new Discord.Client();
-const prefix = ':';
+const prefix = ';';
 
 bot.errorCount = 0;
 
