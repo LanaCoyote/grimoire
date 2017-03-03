@@ -6,7 +6,7 @@ const commandLoader = require('./commands');
 const log = require('./lib/log');
 
 const bot = new Discord.Client();
-const prefix = ';';
+const prefix = ':';
 
 bot.errorCount = 0;
 
@@ -35,7 +35,7 @@ function executeCommand(command, argv, message) {
 
     try {
         let cmdProm = command.execute(message, argv.splice(1), bot);
-        if (!cmdProm instanceof Promise) cmdProm = Promise.resolve(cmdProm);
+        if (!(cmdProm instanceof Promise)) cmdProm = Promise.resolve(cmdProm);
         cmdProm.then(() => {
             let runtime = new Date() - startTime;
             log.info(`Executed command "${commandName}" in ${runtime}ms`);
