@@ -3,6 +3,7 @@ const RichEmbed = require('discord.js').RichEmbed;
 
 const nickname = require('../config.json').nickname;
 const startTime = Date.now();
+const MEGABYTE = 1024 * 1024
 
 function stats(message) {
     return Promise.join(message.channel.sendEmbed(createRichEmbed(message, this)), message.delete());
@@ -19,8 +20,8 @@ function createRichEmbed(message, bot) {
         .addField("Average Ping", message.client.ping.toFixed(2) + "ms", true)
         .addField("Spells Prepared", getCommandString(bot), true)
         .addField("Errors Encountered", bot.errorCount, true)
-        .addField("Memory Used", Math.floor(mem.heapUsed/1000000) + "MB / "
-            + Math.floor(mem.heapTotal/1000000) + "MB Allocated", true)
+        .addField("Memory Used", Math.floor(mem.heapUsed/MEGABYTE) + "MB / "
+            + Math.floor(mem.heapTotal/MEGABYTE) + "MB Allocated", true)
         .addField("Villages Destroyed", 834, true)
 }
 
